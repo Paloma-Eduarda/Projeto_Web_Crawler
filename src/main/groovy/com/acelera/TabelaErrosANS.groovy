@@ -31,8 +31,6 @@ class TabelaErrosANS {
         }
     }
 
-
-
     void baixarTabelaErrosANS(urlTabelaRelacionada){
         File saved = new File('/home/paloma/IdeaProjects/Projeto_Web_Crawler/recursos/TabelaErros.xlsx')
 
@@ -44,4 +42,3 @@ class TabelaErrosANS {
     }
 
 }
-//https://www.gov.br/ans/pt-br/arquivos/assuntos/prestadores/padrao-para-troca-de-informacao-de-saude-suplementar-tiss/padrao-tiss-tabelas-relacionadas/

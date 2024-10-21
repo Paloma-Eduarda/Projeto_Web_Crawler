@@ -9,7 +9,7 @@ static void main(String[] args) {
 
 
     Document page = configure {
-        request.uri = 'https://www.gov.br/ans/pt-br'
+        request.uri = 'https://www.gov.br/ans/pt-br/assuntos/prestadores/padrao-para-troca-de-informacao-de-saude-suplementar-2013-tiss/padrao-tiss-historico-das-versoes-dos-componentes-do-padrao-tiss'
     }.get()
 
     acessarCampoPrestaServico(page)
@@ -36,6 +36,7 @@ def acessarCampoPrestaServico(Document document) {
     }
 }
 def acessarCampoTISS(prestador){
+    HistoricoDasVersoesService historico  = new HistoricoDasVersoesService()
 
     Document paginaPrestador = configure {
         request.uri = prestador
@@ -51,7 +52,8 @@ def acessarCampoTISS(prestador){
         if(linkElement){
             urlTISS =linkElement.absUrl('href')
             println "Link para Campo TISS ${urlTISS} "
-            //acessarCampoPTSetembro(urlTISS)
+
+            historico.acessarCampoHistorico(urlTISS)
             acessarCampoTabelaRelacionada(urlTISS)
         }else{
             println "Erro"
