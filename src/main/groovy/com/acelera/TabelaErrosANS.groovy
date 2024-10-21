@@ -20,7 +20,6 @@ class TabelaErrosANS {
             def linkElement = CampoTB.first().select("a").first()
             if(linkElement){
                 String urlTb = linkElement.absUrl('href')
-                println "Link para tabelas relacionadas ${urlTb} "
                 baixarTabelaErrosANS(urlTb)
 
             }else{
@@ -38,6 +37,7 @@ class TabelaErrosANS {
             request.uri = urlTabelaRelacionada
         }.get {
             Download.toFile(delegate, saved)
+            println "Tabela de Erros armazenada com sucesso"
         }
     }
 

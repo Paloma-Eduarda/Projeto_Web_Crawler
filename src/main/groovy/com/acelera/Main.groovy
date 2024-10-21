@@ -26,7 +26,6 @@ def acessarCampoPrestaServico(Document document) {
 
         if (linkElement != null) {
             String prestadorUrl = linkElement.absUrl('href')
-            println "Link para Espaço do Prestador de Serviços de Saúde: ${prestadorUrl}"
             acessarCampoTISS(prestadorUrl)
         } else {
             println "O link para Espaço do Prestador de Serviços de Saúde não foi encontrado."
@@ -37,6 +36,7 @@ def acessarCampoPrestaServico(Document document) {
 }
 def acessarCampoTISS(prestador){
     HistoricoDasVersoesService historico  = new HistoricoDasVersoesService()
+    ComponenteDeComunicacao componente = new  ComponenteDeComunicacao()
 
     Document paginaPrestador = configure {
         request.uri = prestador
@@ -51,10 +51,11 @@ def acessarCampoTISS(prestador){
 
         if(linkElement){
             urlTISS =linkElement.absUrl('href')
-            println "Link para Campo TISS ${urlTISS} "
 
             historico.acessarCampoHistorico(urlTISS)
             acessarCampoTabelaRelacionada(urlTISS)
+            componente.acessarCampoPTSetembro(urlTISS)
+
         }else{
             println "Erro"
         }
@@ -77,7 +78,6 @@ def acessarCampoTabelaRelacionada(urlTISS){
         def linkElement = CampoTBrelacionada.first().select("a").first()
         if(linkElement){
             urlTb = linkElement.absUrl('href')
-            println "Link para tabelas relacionadas ${urlTb} "
            tabelaErrosANS.acessarCampoTabela(urlTb)
 
         }else{
@@ -87,26 +87,4 @@ def acessarCampoTabelaRelacionada(urlTISS){
         println "O novo campo não foi encontrado na página."
     }
 }
-def acessarCampoPTSetembro(urlTISS){
 
-    Document paginaTISS = configure {
-        request.uri = urlTISS
-    }.get()
-
-    String urlPT
-
-    def CampoPTSet = paginaTISS.getElementsContainingOwnText("Clique aqui para acessar a versão Setembro/2024")
-
-    if (CampoPTSet) {
-        def linkElement = CampoPTSet.first().select("a").first()
-
-        if(linkElement){
-            urlPT = linkElement.absUrl('href')
-            println "Link para Campo Padrão TISS – Versão Setembro/2024 ${urlPT} "
-        }else{
-            println "Erro"
-        }
-    } else {
-        println "O novo campo não foi encontrado na página."
-    }
-}
