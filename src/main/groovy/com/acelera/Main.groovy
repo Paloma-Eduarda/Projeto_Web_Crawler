@@ -6,85 +6,55 @@ import org.jsoup.nodes.Document
 import static groovyx.net.http.HttpBuilder.configure
 
 static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in)
 
-
-    Document page = configure {
-        request.uri = 'https://www.gov.br/ans/pt-br/assuntos/prestadores/padrao-para-troca-de-informacao-de-saude-suplementar-2013-tiss/padrao-tiss-historico-das-versoes-dos-componentes-do-padrao-tiss'
-    }.get()
-
-    acessarCampoPrestaServico(page)
-
-
-
-}
-def acessarCampoPrestaServico(Document document) {
-
-    def prestadorDeServicos = document.getElementsContainingOwnText("Espaço do Prestador de Serviços de Saúde")
-
-    if (prestadorDeServicos) {
-        def linkElement = prestadorDeServicos.first().select("a").first()
-
-        if (linkElement != null) {
-            String prestadorUrl = linkElement.absUrl('href')
-            acessarCampoTISS(prestadorUrl)
-        } else {
-            println "O link para Espaço do Prestador de Serviços de Saúde não foi encontrado."
-        }
-    } else {
-        println "O link para espaço do prestador não foi encontrado."
-    }
-}
-def acessarCampoTISS(prestador){
+    TabelaErrosANS tabelaErrosANS = new TabelaErrosANS()
     HistoricoDasVersoesService historico  = new HistoricoDasVersoesService()
     ComponenteDeComunicacao componente = new  ComponenteDeComunicacao()
 
-    Document paginaPrestador = configure {
-        request.uri = prestador
+    Document page = configure {
+        request.uri = 'https://www.gov.br/ans/pt-br/assuntos/prestadores/padrao-para-troca-de-informacao-de-saude-suplementar-2013-tiss'
     }.get()
 
-    String urlTISS
+    while (true) {
+        println "\nMenu:"
+        println "1. Tabela de Erros Ans"
+        println "2. Historico das Versões"
+        println "3. Componente de comunicação"
+        println "4. Sair"
+        print "Escolha uma opção: "
 
-    def CampoTISS = paginaPrestador.getElementsContainingOwnText("TISS - Padrão para Troca de Informação de Saúde Suplementar")
+        int opcao = scanner.nextInt()
+        scanner.nextLine()
 
-    if (CampoTISS) {
-        def linkElement = CampoTISS.first().select("a").first()
-
-        if(linkElement){
-            urlTISS =linkElement.absUrl('href')
-
-            historico.acessarCampoHistorico(urlTISS)
-            acessarCampoTabelaRelacionada(urlTISS)
-            componente.acessarCampoPTSetembro(urlTISS)
-
-        }else{
-            println "Erro"
+        if (!opcao) {
+            println "Entrada vazia! Por favor, digite um número."
+            continue
         }
-    } else {
-        println "O novo campo não foi encontrado na página."
-    }
-}
-def acessarCampoTabelaRelacionada(urlTISS){
-    TabelaErrosANS tabelaErrosANS = new TabelaErrosANS()
 
-    Document paginaTISS = configure {
-        request.uri = urlTISS
-    }.get()
-
-    String urlTb
-
-    def CampoTBrelacionada = paginaTISS.getElementsContainingOwnText("Clique aqui para acessar as planilhas")
-
-    if (CampoTBrelacionada) {
-        def linkElement = CampoTBrelacionada.first().select("a").first()
-        if(linkElement){
-            urlTb = linkElement.absUrl('href')
-           tabelaErrosANS.acessarCampoTabela(urlTb)
-
-        }else{
-            println "Erro"
+        try {
+            switch(opcao) {
+                case 1:
+                    println "\nBaixando Tabela de Erros:"
+                    tabelaErrosANS.acessarCampoTabelaRelacionada(page)
+                    break
+                case 2:
+                    println "\nTabela Historico das versões:"
+                    historico.acessarCampoHistorico(page)
+                    break
+                case 3:
+                    println "\nBaixar Componente de Comunicação:"
+                    componente.acessarCampoPTSetembro(page)
+                    break
+                case 4:
+                    println "Saindo do programa..."
+                    return
+                default:
+                    println "Opção inválida! Por favor, escolha uma opção válida."
+            }
+        } catch (NumberFormatException exception) {
+            println "Entrada inválida! Por favor, insira um número. ${exception}"
         }
-    } else {
-        println "O novo campo não foi encontrado na página."
     }
 }
 

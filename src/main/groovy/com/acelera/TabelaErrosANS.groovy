@@ -7,12 +7,28 @@ import static groovyx.net.http.HttpBuilder.configure
 
 class TabelaErrosANS {
 
+    void acessarCampoTabelaRelacionada(urlTISS){
+
+        String urlTb
+        def CampoTBrelacionada = urlTISS.getElementsContainingOwnText("Clique aqui para acessar as planilhas")
+        if (CampoTBrelacionada) {
+            def linkElement = CampoTBrelacionada.first().select("a").first()
+            if(linkElement){
+                urlTb = linkElement.absUrl('href')
+                    acessarCampoTabela(urlTb)
+            }else{
+                println "Erro"
+            }
+        } else {
+            println "O novo campo não foi encontrado na página."
+        }
+    }
+
     void acessarCampoTabela(urlTabelaRelacionada){
 
         Document paginaTabela = configure {
             request.uri = urlTabelaRelacionada
         }.get()
-
 
         def CampoTB = paginaTabela.getElementsContainingOwnText("Clique aqui para baixar a tabela de erros no envio para a ANS (.xlsx)")
 

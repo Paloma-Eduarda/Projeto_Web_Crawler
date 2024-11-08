@@ -10,13 +10,9 @@ class ComponenteDeComunicacao {
 
     void acessarCampoPTSetembro(urlTISS){
 
-        Document paginaTISS = configure {
-            request.uri = urlTISS
-        }.get()
-
         String urlPT
 
-        def CampoPTSet = paginaTISS.getElementsContainingOwnText("Clique aqui para acessar a versão Setembro/2024")
+        def CampoPTSet = urlTISS.getElementsContainingOwnText("Clique aqui para acessar a versão Setembro/2024")
 
         if (CampoPTSet) {
             def linkElement = CampoPTSet.first().select("a").first()

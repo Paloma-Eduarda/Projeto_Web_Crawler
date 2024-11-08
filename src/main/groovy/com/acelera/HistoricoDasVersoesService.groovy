@@ -10,14 +10,7 @@ import static groovyx.net.http.HttpBuilder.configure
 class HistoricoDasVersoesService {
 
     void acessarCampoHistorico(urlTISS){
-
-        Document paginaHistorico = configure {
-            request.uri = urlTISS
-        }.get()
-
-        paginaHistorico
-
-        def CampoHistorico = paginaHistorico.getElementsContainingOwnText("Clique aqui para acessar todas as versões dos Componentes")
+        def CampoHistorico = urlTISS.getElementsContainingOwnText("Clique aqui para acessar todas as versões dos Componentes")
 
         if (CampoHistorico) {
             def linkElement = CampoHistorico.first().select("a").first()
